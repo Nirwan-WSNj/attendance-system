@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="si">
+<head>
+  <meta charset="utf-8">
+  <title>Attendance System - Sinhala Full Guide</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 18mm 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #172033;
+      font-family: "Nirmala UI", "Iskoola Pota", "Segoe UI", Arial, sans-serif;
+      font-size: 12.2px;
+      line-height: 1.62;
+      background: #ffffff;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0 0 8px 0;
+      color: #0f1f3a;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 19px;
+      border-bottom: 1px solid #c9d4e5;
+      padding-bottom: 5px;
+      margin-top: 22px;
+    }
+
+    h3 {
+      font-size: 15px;
+      margin-top: 16px;
+      color: #19365f;
+    }
+
+    h4 {
+      font-size: 13px;
+      margin-top: 12px;
+      color: #25466f;
+    }
+
+    p {
+      margin: 0 0 8px 0;
+    }
+
+    ul, ol {
+      margin: 4px 0 10px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px 0;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #ccd6e2;
+      padding: 6px 7px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef4fb;
+      color: #143152;
+      font-weight: 700;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+      background: #eef2f7;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e5eefc;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 10.8px;
+      line-height: 1.45;
+      page-break-inside: avoid;
+    }
+
+    .cover {
+      min-height: 245mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      border: 2px solid #102a43;
+      padding: 24mm 12mm;
+      page-break-after: always;
+    }
+
+    .cover .org {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+    }
+
+    .cover .title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 14px 0;
+    }
+
+    .cover .subtitle {
+      font-size: 15px;
+      color: #334e68;
+      margin-bottom: 22px;
+    }
+
+    .cover .meta {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #52606d;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .note {
+      border-left: 4px solid #2563eb;
+      background: #eef6ff;
+      padding: 8px 10px;
+      margin: 8px 0 12px 0;
+    }
+
+    .warning {
+      border-left: 4px solid #b45309;
+      background: #fff7ed;
+      padding: 8px 10px;
+      margin: 8px 0 12px 0;
+    }
+
+    .ok {
+      border-left: 4px solid #047857;
+      background: #ecfdf5;
+      padding: 8px 10px;
+      margin: 8px 0 12px 0;
+    }
+
+    .muted {
+      color: #52606d;
+      font-size: 11.4px;
+    }
+
+    .toc a {
+      color: #102a43;
+      text-decoration: none;
+    }
+
+    .small-table td,
+    .small-table th {
+      font-size: 11.2px;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="org">CENTRAL ENGINEERING CONSULTANCY BUREAU</div>
+    <div class="title">Attendance System<br>සම්පූර්ණ සිංහල Guide</div>
+    <div class="subtitle">Dashboard, Attendance, OT, Reports, Voucher, Login, Database සහ Coding Structure</div>
+    <div class="meta">
+      Project Path: <code>C:\github\attendance-system</code><br>
+      Prepared for: System understanding, handover, learning and future development<br>
+      Date: 2026-07-01
+    </div>
+  </section>
+
+  <h1>1. හැඳින්වීම</h1>
+  <p>
+    මෙම guide එක CECB Attendance System එක සම්පූර්ණයෙන් තේරුම් ගන්න ලියපු ලේඛනයකි. මෙහිදී system එකේ business purpose,
+    database connection, backend API, frontend React UI, attendance logic, OT calculation, reports, voucher generation, role-based login
+    සහ future maintenance ගැන සරල සිංහලෙන් පැහැදිලි කරයි.
+  </p>
+  <p>
+    මෙය IT basic දැනුමක් තියෙන කෙනෙකුටත් system එකේ coding structure සහ data flow එක step-by-step ඉගෙන ගන්න පුළුවන් විදිහට සකස් කර ඇත.
+  </p>
+
+  <h2>1.1 මේ system එකෙන් කරන ප්‍රධාන වැඩ</h2>
+  <ul>
+    <li>Employee attendance punch data බලනවා.</li>
+    <li>CECB ERP employee details සහ workspace details connect කරනවා.</li>
+    <li>Leave/Schedule DB එකෙන් in/out schedule ගන්නවා.</li>
+    <li>Daily dashboard, all attendance view, analytics, AGM heatmap වගේ UI screens දෙනවා.</li>
+    <li>Late, absent, present, short leave, half day status calculate කරනවා.</li>
+    <li>OT summary calculate කරලා worked OT සහ payable OT පෙන්වනවා.</li>
+    <li>OT voucher PDF/print layout generate කරනවා.</li>
+    <li>Admin සහ Employee role-based login support කරනවා.</li>
+    <li>Long-term data correctness සඳහා snapshots/history tables add කරලා තියෙනවා.</li>
+  </ul>
+
+  <h2>1.2 වැඩ ආරම්භය සිට මේ දක්වා සාරාංශය</h2>
+  <p>
+    පළමුව CECB dashboard එක check කරලා late-covered status issue එක, විශේෂයෙන් පළමු දින 2 සඳහා status correction, dashboard data
+    display සහ attendance status logic බලලා correct කරන ලදි. ඒකෙන් පස්සේ full Attendance System එක build/extend කරන්න පටන් ගත්තා.
+  </p>
+  <p>
+    පසුව fingerprint attendance data, ERP employee data, workspace data, leave/schedule data එක system එකට connect කරලා reports සහ analytics
+    develop කළා. OT side එකේ 22-16 range/monthly OT, late OT/early OT, worked OT, payable OT වගේ calculations check කරලා report and voucher
+    side එකත් align කළා.
+  </p>
+  <p>
+    ඊට පස්සේ OT voucher PDF layout එක manual voucher/reference PDF වලට compare කරලා header spacing, footer spacing, table gap, signature panel
+    වගේ layout fixes දාලා තියෙනවා. Reports loading smooth කිරීම, future month message handling, Pay Rule column removal, month/year selection
+    වගේ UI improvements ද කළා.
+  </p>
+  <p>
+    අවසානයේ employee login, role-based UI, user management, database foundation, employee-user mapping, workspace history, monthly attendance
+    snapshots සහ monthly OT snapshots add කරලා system එක long-term maintainable direction එකට ගෙන ගියා.
+  </p>
+
+  <div class="page-break"></div>
+  <h1>2. Main Technologies</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Technology</th>
+        <th>මෙම system එකේ භාවිතය</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>React.js</td>
+        <td>Frontend UI: Dashboard, Reports, Login, Analytics, Employee screens.</td>
+      </tr>
+      <tr>
+        <td>ASP.NET Core Web API / .NET 8</td>
+        <td>Backend API: data read, attendance logic, report logic, authentication.</td>
+      </tr>
+      <tr>
+        <td>Microsoft SQL Server</td>
+        <td>ERP DB, fingerprint DB, leave/schedule DB, AttendanceSystemDB.</td>
+      </tr>
+      <tr>
+        <td>Entity Framework Core</td>
+        <td>C# code එකෙන් SQL Server tables query කරන ORM layer.</td>
+      </tr>
+      <tr>
+        <td>JWT Bearer Authentication</td>
+        <td>Login token based security. Admin/Employee role identify කරනවා.</td>
+      </tr>
+      <tr>
+        <td>BCrypt</td>
+        <td>User password secure hash ලෙස save කරනවා.</td>
+      </tr>
+      <tr>
+        <td>Recharts</td>
+        <td>React charts/graphs draw කරන library.</td>
+      </tr>
+      <tr>
+        <td>CSS / Utility Classes</td>
+        <td>UI styling, report layout, printable PDF-like pages.</td>
+      </tr>
+      <tr>
+        <td>PowerShell, dotnet CLI, npm</td>
+        <td>Development commands run කරන්න.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2.1 Recharts කියන්නේ මොකක්ද?</h2>
+  <p>
+    Recharts කියන්නේ React app එකක chart/graph draw කරන්න use කරන library එකකි. මෙම system එකේ work hours bar chart, attendance trend,
+    present/late/absent breakdown, analytics charts වගේ UI parts වල Recharts use කරයි.
+  </p>
+  <pre>
+Data array -> Recharts component -> SVG chart
+  </pre>
+
+  <h1>3. Project Folder Structure</h1>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Folder/File</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>AttendanceSystem.API</code></td>
+        <td>Backend .NET API project.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem.API\Controllers</code></td>
+        <td>API endpoints. Frontend එක call කරන routes.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem.API\Repository</code></td>
+        <td>Main attendance/report calculation logic.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem.API\DB</code></td>
+        <td>Database contexts සහ models.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem.API\BL</code></td>
+        <td>Business logic layer. AuthBL login/user creation logic.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem_UI</code></td>
+        <td>Frontend React app.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem_UI\src\components</code></td>
+        <td>Dashboard, Reports, Analytics, Login, Employee UI components.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceSystem_UI\src\config</code></td>
+        <td>API client, auth token service, utility functions.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h1>4. System Architecture</h1>
+  <p>
+    මෙම system එක layers කිහිපයකින් තියෙනවා. User browser එකෙන් React frontend එක open කරනවා. React frontend එක backend API endpoints call කරනවා.
+    Backend API එක SQL Server databases වලට EF Core හරහා connect වෙලා data read/write කරනවා.
+  </p>
+  <pre>
+User Browser
+   |
+   v
+React Frontend
+   |
+   v
+ASP.NET Core API
+   |
+   +--> AttendanceERP DB        (Fingerprint punch records)
+   +--> CECB_ERP / ServerERP    (Employee, designation, workspace)
+   +--> LeaveDb                 (In/Out schedules)
+   +--> AttendanceSystemDB      (Users, rules, snapshots, history)
+  </pre>
+
+  <h2>4.1 Data Flow Example</h2>
+  <ol>
+    <li>User dashboard එක open කරනවා.</li>
+    <li>React component එක <code>attendanceApi.today()</code> වගේ API function එක call කරනවා.</li>
+    <li>Backend <code>AttendanceController</code> endpoint එක request එක receive කරනවා.</li>
+    <li><code>AttendanceRepository</code> fingerprint DB + ERP DB + Leave DB data combine කරනවා.</li>
+    <li>Status calculate කරලා JSON response එක frontend එකට return කරනවා.</li>
+    <li>React UI table/card/chart එක update කරනවා.</li>
+  </ol>
+
+  <h1>5. Database Sources</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Database</th>
+        <th>Context/File</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AttendanceERP</td>
+        <td><code>AttendanceERPDbContext</code></td>
+        <td>Fingerprint punch data. <code>FPDataset</code>, <code>FPuserlist</code>.</td>
+      </tr>
+      <tr>
+        <td>ServerERP / CECB_ERP</td>
+        <td><code>ERPDBContext</code></td>
+        <td>Employee master, designation, workspace hierarchy.</td>
+      </tr>
+      <tr>
+        <td>LeaveDb</td>
+        <td><code>LeaveDbContext</code></td>
+        <td>Employee in/out schedule times.</td>
+      </tr>
+      <tr>
+        <td>AttendanceSystemDB</td>
+        <td><code>AppDbContext</code></td>
+        <td>System users, rules, health, snapshots, workspace history.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5.1 AttendanceSystemDB Tables</h2>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Users</code></td>
+        <td>Login users. Username, password hash, role, EPF, active status.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceRuleSettings</code></td>
+        <td>Default in/out, late threshold, OT rounding/cap settings.</td>
+      </tr>
+      <tr>
+        <td><code>DataSourceHealth</code></td>
+        <td>Source DB connection health status.</td>
+      </tr>
+      <tr>
+        <td><code>EmployeeScheduleSnapshots</code></td>
+        <td>Latest employee schedule/workspace copied into app DB.</td>
+      </tr>
+      <tr>
+        <td><code>EmployeeUserMappings</code></td>
+        <td>User account and employee EPF/EmployeeId mapping.</td>
+      </tr>
+      <tr>
+        <td><code>EmployeeWorkspaceHistory</code></td>
+        <td>Workspace transfer history. Old reports can keep historical workspace.</td>
+      </tr>
+      <tr>
+        <td><code>MonthlyAttendanceSnapshots</code></td>
+        <td>Finalized monthly attendance summary copy.</td>
+      </tr>
+      <tr>
+        <td><code>MonthlyOTSummarySnapshots</code></td>
+        <td>Finalized monthly OT summary copy.</td>
+      </tr>
+      <tr>
+        <td><code>ReportGenerationAudits</code></td>
+        <td>Future report audit logging support.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h1>6. Backend API Structure</h1>
+  <h2>6.1 Program.cs</h2>
+  <p>
+    <code>Program.cs</code> backend app එක start කරන main file එකයි. මෙහිදී services register කරනවා, DB contexts setup කරනවා, JWT authentication
+    configure කරනවා, CORS setup කරනවා, Swagger enable කරනවා, startup වෙද්දී app DB operational tables create/update කරනවා.
+  </p>
+  <ul>
+    <li><code>AddDbContext&lt;AppDbContext&gt;</code> - AttendanceSystemDB</li>
+    <li><code>AddDbContext&lt;AttendanceERPDbContext&gt;</code> - Fingerprint DB</li>
+    <li><code>AddDbContext&lt;ERPDBContext&gt;</code> - ERP DB</li>
+    <li><code>AddDbContext&lt;LeaveDbContext&gt;</code> - Schedule DB</li>
+    <li><code>AddScoped&lt;AttendanceRepository&gt;</code> - main repository</li>
+    <li><code>AddScoped&lt;AuthBL&gt;</code> - auth business logic</li>
+  </ul>
+
+  <h2>6.2 Controllers</h2>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Controller</th>
+        <th>Main endpoints</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>AuthController</code></td>
+        <td><code>login</code>, <code>users</code>, <code>change-password</code></td>
+        <td>Login, create users, list users, password change.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceController</code></td>
+        <td><code>today</code>, <code>bydate</code>, <code>range</code>, <code>chart/*</code></td>
+        <td>Daily/range attendance data and chart data.</td>
+      </tr>
+      <tr>
+        <td><code>EmployeeController</code></td>
+        <td><code>GET /api/Employee</code></td>
+        <td>Employee search/list for admin UI.</td>
+      </tr>
+      <tr>
+        <td><code>ReportController</code></td>
+        <td><code>agm-wise</code>, <code>employee</code>, <code>ot-summary</code>, etc.</td>
+        <td>Reports and report data.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>6.3 AttendanceRepository</h2>
+  <p>
+    <code>AttendanceRepository.cs</code> system එකේ brain එක වගේ. Attendance data fetch, employee join, schedule apply, status calculate, reports,
+    OT, snapshots, workspace history වගේ core logic මෙහි තියෙනවා.
+  </p>
+
+  <h3>Important backend functions</h3>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Function</th>
+        <th>What it does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>GetTodayAsync()</code></td>
+        <td>අද attendance records ගන්නවා.</td>
+      </tr>
+      <tr>
+        <td><code>GetByDateAsync(date)</code></td>
+        <td>එක් දිනක attendance records ගන්නවා.</td>
+      </tr>
+      <tr>
+        <td><code>GetByRangeAsync(from, to, epfNo)</code></td>
+        <td>Date range එකකට punch records ගන්නවා. EPF filter optional.</td>
+      </tr>
+      <tr>
+        <td><code>GetStatusByEpfAndDateAsync()</code></td>
+        <td>Employee එකක දිනක present/absent/late status calculate කරනවා.</td>
+      </tr>
+      <tr>
+        <td><code>GetEmployeeReportAsync()</code></td>
+        <td>Individual employee daily report summary generate කරනවා.</td>
+      </tr>
+      <tr>
+        <td><code>GetAllEmployeeSummaryAsync()</code></td>
+        <td>All employees attendance summary generate කරනවා.</td>
+      </tr>
+      <tr>
+        <td><code>GetAgmWiseReportAsync()</code></td>
+        <td>AGM -> DGM -> Service Unit hierarchy attendance summary.</td>
+      </tr>
+      <tr>
+        <td><code>GetLateArrivalReportAsync()</code></td>
+        <td>Late arrivals list.</td>
+      </tr>
+      <tr>
+        <td><code>GetDailySummaryReportAsync()</code></td>
+        <td>Daily present/absent/late/attendance rate summary.</td>
+      </tr>
+      <tr>
+        <td><code>GetAttendanceRegisterAsync()</code></td>
+        <td>Monthly attendance register data.</td>
+      </tr>
+      <tr>
+        <td><code>GetOTSummaryAsync()</code></td>
+        <td>OT worked hours, payable OT, daily OT records calculate කරනවා.</td>
+      </tr>
+      <tr>
+        <td><code>RefreshScheduleCacheAsync()</code></td>
+        <td>ERP/LeaveDB data refresh කරලා snapshots update කරනවා.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h1>7. Authentication and Role-Based Access</h1>
+  <p>
+    Login process එක JWT token based. User login කළාම backend එක username/password verify කරලා JWT token එක return කරනවා. Frontend එක token එක
+    localStorage එකේ save කරනවා. ඉන්පසු API requests වල Authorization header එකට token එක යවයි.
+  </p>
+
+  <h2>7.1 User Roles</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Access</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Admin</td>
+        <td>Dashboard, all attendance, employee list, analytics, all reports, user management.</td>
+      </tr>
+      <tr>
+        <td>Employee</td>
+        <td>Own attendance dashboard, own reports, own OT/analytics. Admin reports blocked.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>7.2 AuthBL important logic</h2>
+  <ul>
+    <li>Password BCrypt hash එකෙන් verify වෙනවා.</li>
+    <li>Failed login attempts 5ක් වුණොත් account temporary lock වෙනවා.</li>
+    <li>Role allowlist: <code>Admin</code> හෝ <code>Employee</code> පමණයි.</li>
+    <li>Employee user එකකට EPF අනිවාර්යයි.</li>
+    <li>Same EPF එකට duplicate active user create වීම block වෙනවා.</li>
+    <li>Token claim එකේ role, epfNo, fullName save වෙනවා.</li>
+  </ul>
+
+  <div class="ok">
+    EPF numbers normalize කරලා use කරනවා. උදාහරණය: <code>123</code> -> <code>000123</code>. මේක fingerprint DB සහ ERP DB EPF formats compare කරන්න වැදගත්.
+  </div>
+
+  <h1>8. Frontend React Structure</h1>
+  <p>
+    Frontend app එක React components වලින් build කරලා තියෙනවා. User screen එකක action එකක් කරනකොට component state update වෙනවා, API call වෙනවා,
+    response එකට අනුව table/chart/cards update වෙනවා.
+  </p>
+
+  <h2>8.1 Important UI components</h2>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>App.js</code></td>
+        <td>Routing and login state. Admin/employee route guard.</td>
+      </tr>
+      <tr>
+        <td><code>Sidebar.jsx</code></td>
+        <td>Navigation menu. Admin-only menu items hide/show.</td>
+      </tr>
+      <tr>
+        <td><code>Login.jsx</code></td>
+        <td>Username/password login form.</td>
+      </tr>
+      <tr>
+        <td><code>Dashboard.jsx</code></td>
+        <td>Today attendance dashboard, KPIs, status table.</td>
+      </tr>
+      <tr>
+        <td><code>AllAttendance.jsx</code></td>
+        <td>All attendance range/table view with filters/sorting.</td>
+      </tr>
+      <tr>
+        <td><code>Analytics.jsx</code></td>
+        <td>Trend charts, AGM heatmap, period comparison.</td>
+      </tr>
+      <tr>
+        <td><code>Reports.jsx</code></td>
+        <td>AGM report, employee report, late arrivals, daily summary, all employees, OT summary, voucher.</td>
+      </tr>
+      <tr>
+        <td><code>AttendanceRegister.jsx</code></td>
+        <td>Monthly attendance register print/export.</td>
+      </tr>
+      <tr>
+        <td><code>MyAttendance.jsx</code></td>
+        <td>Employee personal dashboard and analytics.</td>
+      </tr>
+      <tr>
+        <td><code>UserManagement.jsx</code></td>
+        <td>Admin user create/list/toggle active UI.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>8.2 API client</h2>
+  <p>
+    <code>src/config/apiClient.js</code> file එක frontend API calls centralize කරනවා. මෙහිදී token header attach කරනවා, auth expired නම් logout event
+    trigger කරනවා, query string helper use කරනවා.
+  </p>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>API object</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>attendanceApi</code></td>
+        <td>Today/bydate/range/source-status/chart data.</td>
+      </tr>
+      <tr>
+        <td><code>hrApi</code></td>
+        <td>Employee list/search.</td>
+      </tr>
+      <tr>
+        <td><code>reportApi</code></td>
+        <td>Reports: AGM, employee, late, daily summary, OT, etc.</td>
+      </tr>
+      <tr>
+        <td><code>authApi</code></td>
+        <td>User management: get users, create user, toggle user.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h1>9. Attendance Status Logic</h1>
+  <p>
+    Attendance status calculate කිරීමේදී punch data, scheduled start/end time, holiday/weekend status, source sync status යන දේවල් consider කරනවා.
+  </p>
+
+  <h2>9.1 Common statuses</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>OnTime</td>
+        <td>Schedule start time අනුව late threshold එකට කලින් check-in.</td>
+      </tr>
+      <tr>
+        <td>Late</td>
+        <td>Check-in scheduled start එකට පසු late threshold තුළ/ඉක්මවා.</td>
+      </tr>
+      <tr>
+        <td>HalfShortLeave</td>
+        <td>Late minutes configured threshold එක අනුව intermediate category.</td>
+      </tr>
+      <tr>
+        <td>ShortLeave</td>
+        <td>Late minutes වැඩි category.</td>
+      </tr>
+      <tr>
+        <td>HalfDay</td>
+        <td>Very late / half-day condition.</td>
+      </tr>
+      <tr>
+        <td>Absent</td>
+        <td>Working day එකක punch record නොමැතිනම්.</td>
+      </tr>
+      <tr>
+        <td>NotSynced</td>
+        <td>Fingerprint/source data day එකට properly sync නැති නම්.</td>
+      </tr>
+      <tr>
+        <td>Weekend/Holiday</td>
+        <td>Non-working day. Attendance/OT rules වෙනස් විය හැක.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>9.2 Schedule logic</h2>
+  <p>
+    Employee schedule එක LeaveDb <code>InOutTimes</code> table එකෙන් ගන්නවා. Schedule නොමැති නම් default rule settings use වෙනවා.
+    Default values current initializer එකෙන්:
+  </p>
+  <ul>
+    <li>Default In: 08:30</li>
+    <li>Default Out: 16:15</li>
+    <li>Late threshold: 30 minutes</li>
+    <li>Half Short Leave threshold: 45 minutes</li>
+    <li>Short Leave threshold: 90 minutes</li>
+  </ul>
+
+  <h2>9.3 Dashboard correction history</h2>
+  <p>
+    Dashboard side එකේ initial correction වලදී late-covered status issue එක සහ first 2 days status problem එක check කරලා accurate status display
+    කරගන්න improvements කළා. Dashboard එකේ data source, late status calculation, table row status display වගේ parts align කිරීම මෙම stage එකේ සිදු වුණා.
+  </p>
+
+  <h1>10. OT Logic</h1>
+  <p>
+    OT summary report එක worked OT සහ payable OT දෙක පෙන්වයි. Worked OT කියන්නේ actual worked overtime duration. Payable OT කියන්නේ rules අනුව
+    ගෙවිය හැකි OT amount/hours.
+  </p>
+
+  <h2>10.1 Worked OT vs Payable OT</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Column</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Worked OT</td>
+        <td>Employee actual වැඩ කරපු overtime hours. Morning OT + Evening OT.</td>
+      </tr>
+      <tr>
+        <td>Payable OT</td>
+        <td>Payment rules අනුව ගෙවිය හැකි OT hours. Engineer pay category වගේ rules බලයි.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>10.2 OT calculation steps</h2>
+  <ol>
+    <li>Employee punch record එකේ check-in/check-out ගන්නවා.</li>
+    <li>Employee schedule start/end time resolve කරනවා.</li>
+    <li>Morning OT: scheduled start ට කලින් valid early work.</li>
+    <li>Evening OT: scheduled end ට පස්සේ valid extra work.</li>
+    <li>Weekend/Holiday නම් non-working day OT rules apply කරනවා.</li>
+    <li>Rounding minutes and OT cap rules apply කරනවා.</li>
+    <li>Total OT hours calculate කරනවා.</li>
+    <li>Engineer category නම් payable OT special rule apply කරනවා.</li>
+  </ol>
+
+  <h2>10.3 OT voucher</h2>
+  <p>
+    OT voucher PDF/print layout එක Reports UI තුළ generate කරයි. Voucher layout එක manual/reference voucher PDF වලට compare කරලා header alignment,
+    footer bottom spacing, table-to-signature spacing, line 7 to Additional Hours gap වගේ details fix කර ඇත.
+  </p>
+  <p>
+    Voucher generate කරනකොට selected month range එකට load වූ report data use කරනවා. Data mismatch avoid කරන්න selected month වෙනස් කළ පසු report
+    generate නොකර export/voucher button use කිරීම guard කරලා තියෙනවා.
+  </p>
+
+  <div class="page-break"></div>
+  <h1>11. Reports Module</h1>
+  <p>
+    Reports module එක admin සහ employee දෙපාර්ශවයට වෙනස් permission සමඟ available වේ. Admin all reports බලනවා. Employee තමන්ගේ EPF එකට අදාල
+    reports පමණක් බලනවා.
+  </p>
+
+  <h2>11.1 Report types</h2>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Report</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AGM-wise Attendance Report</td>
+        <td>AGM -> DGM -> Service Unit hierarchy attendance statistics.</td>
+      </tr>
+      <tr>
+        <td>Employee Report</td>
+        <td>One employee daily attendance details for a date range.</td>
+      </tr>
+      <tr>
+        <td>Monthly Sheet</td>
+        <td>Monthly per-day status sheet.</td>
+      </tr>
+      <tr>
+        <td>EPF Status Lookup</td>
+        <td>Single employee/day status lookup.</td>
+      </tr>
+      <tr>
+        <td>Late Arrivals Report</td>
+        <td>Late employees list for date range.</td>
+      </tr>
+      <tr>
+        <td>Daily Summary</td>
+        <td>Daily total registered, present, absent, late, rate.</td>
+      </tr>
+      <tr>
+        <td>All Employee Summary</td>
+        <td>All employees attendance summary by date range.</td>
+      </tr>
+      <tr>
+        <td>OT Summary</td>
+        <td>Month/year based OT summary and voucher data.</td>
+      </tr>
+      <tr>
+        <td>Attendance Register</td>
+        <td>Physical attendance register print/export.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>11.2 Month/year OT report change</h2>
+  <p>
+    OT Summary එක මුලින් date range + voucher month එකක් තිබුණු නිසා confusion එකක් තිබුණා. ඒක month/year selection flow එකකට improve කළා.
+    Date range option වෙනුවට user තෝරන්නේ year සහ month. System එක ඒ month එකේ first day සිට last day දක්වා range build කරනවා.
+  </p>
+  <div class="note">
+    Future month එකක් select කළොත් error-like red message නොව, friendly info message එකක් පෙන්වයි. Generate button disable වෙනවා.
+  </div>
+
+  <h2>11.3 Exports</h2>
+  <ul>
+    <li>CSV export: table rows CSV file එකක් ලෙස download.</li>
+    <li>PDF/Print export: browser print window එකෙන් PDF save කළ හැක.</li>
+    <li>Voucher PDF: OT voucher layout එක print/PDF ලෙස generate.</li>
+  </ul>
+
+  <h1>12. Analytics and Heatmap</h1>
+  <p>
+    Analytics page එක attendance trends, AGM heatmap, period comparison වගේ decision support UI එකක්. Heatmap color එක attendance percentage
+    අනුව වෙනස් වෙනවා. Legend boxes date range data loaded වූ පසු පමණක් පෙන්වයි.
+  </p>
+
+  <h2>12.1 Heatmap meaning</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Color/Range</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Excellent</td>
+        <td>High attendance percentage.</td>
+      </tr>
+      <tr>
+        <td>Good</td>
+        <td>Acceptable attendance level.</td>
+      </tr>
+      <tr>
+        <td>Watch</td>
+        <td>Attention needed soon.</td>
+      </tr>
+      <tr>
+        <td>Low / Needs attention</td>
+        <td>Management attention required.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <h1>13. Employee Login Experience</h1>
+  <p>
+    Employee user login වූ විට admin dashboard වෙනුවට personal attendance view එකක් පෙන්වයි. Employeeට තමන්ගේ attendance, status breakdown,
+    work hours chart, OT/report data වගේ own data පමණක් access කළ හැක.
+  </p>
+
+  <h2>13.1 Employee dashboard features</h2>
+  <ul>
+    <li>Own EPF based date range attendance load.</li>
+    <li>Present, late, absent, attendance percentage KPIs.</li>
+    <li>Work hours bar chart.</li>
+    <li>Status breakdown chart/cards.</li>
+    <li>Own report/OT access.</li>
+  </ul>
+
+  <h2>13.2 Admin user management</h2>
+  <p>
+    Admin user can open Users page and create Employee/Admin users. Employee user create කරනකොට EPF select කළ හැක. EPF selected වූ විට employee
+    full name and username auto-fill support ඇත.
+  </p>
+
+  <h1>14. Snapshot and History Concept</h1>
+  <p>
+    Snapshot කියන්නේ ඒ වෙලාවේ තිබුණු data copy එකක්. Live ERP data වෙනස් වුණත් old report එක correct historical data පෙන්වන්න මේක වැදගත්.
+  </p>
+
+  <h2>14.1 Example</h2>
+  <p>
+    May 2026 report generate කළ වෙලාවේ employee එක Colombo service unit එකේ සිටිය හැක. July වල Kandy service unit එකට transfer වුණොත්,
+    May report නැවත බලද්දී May data Colombo ලෙසම තිබිය යුතුයි. ඒ නිසා workspace history/snapshot data save කිරීම අවශ්‍යයි.
+  </p>
+
+  <h2>14.2 Snapshot tables</h2>
+  <ul>
+    <li><code>EmployeeScheduleSnapshots</code> - latest schedule/workspace copy.</li>
+    <li><code>EmployeeWorkspaceHistory</code> - transfer history with effective dates.</li>
+    <li><code>MonthlyAttendanceSnapshots</code> - finalized attendance summary.</li>
+    <li><code>MonthlyOTSummarySnapshots</code> - finalized OT summary.</li>
+  </ul>
+
+  <h1>15. Coding Concepts for Basic IT Learner</h1>
+  <h2>15.1 React component කියන්නේ මොකක්ද?</h2>
+  <p>
+    React component කියන්නේ screen එකේ එක් කොටසක් draw කරන JavaScript function එකක්. උදාහරණයට <code>Dashboard()</code> component එක dashboard screen
+    එක draw කරනවා.
+  </p>
+  <pre>
+export default function Dashboard() {
+  // state, API calls, render UI
+  return (...);
+}
+  </pre>
+
+  <h2>15.2 State කියන්නේ මොකක්ද?</h2>
+  <p>
+    State කියන්නේ component එකේ current data. උදාහරණයට loading true/false, selected date, report data, table filter වගේ දේවල් state වේ.
+  </p>
+
+  <h2>15.3 API call කියන්නේ මොකක්ද?</h2>
+  <p>
+    Frontend එක backend එකෙන් data ඉල්ලන request එක. උදාහරණයට dashboard එක today attendance data ඉල්ලයි.
+  </p>
+  <pre>
+const rows = await attendanceApi.today();
+  </pre>
+
+  <h2>15.4 Controller කියන්නේ මොකක්ද?</h2>
+  <p>
+    Backend controller කියන්නේ API route එක receive කරන C# class එකක්. Frontend request එක route එකට එනවා, controller එක repository/business logic
+    call කරලා result return කරනවා.
+  </p>
+
+  <h2>15.5 DbContext කියන්නේ මොකක්ද?</h2>
+  <p>
+    DbContext කියන්නේ EF Core හරහා database tables code objects ලෙස handle කරන class එකක්. උදාහරණයට <code>AppDbContext.Users</code> කියන්නේ
+    Users table එක query කරන්න use කරන object එකයි.
+  </p>
+
+  <h2>15.6 DTO කියන්නේ මොකක්ද?</h2>
+  <p>
+    DTO (Data Transfer Object) කියන්නේ API response/request shape එක define කරන class එකක්. Backend එක frontend එකට data යවන format එක DTO වලින්
+    පැහැදිලි කරයි.
+  </p>
+
+  <div class="page-break"></div>
+  <h1>16. Important Commands</h1>
+  <h2>16.1 Backend run</h2>
+  <pre>
+cd C:\github\attendance-system\AttendanceSystem.API
+dotnet restore
+dotnet build
+dotnet run
+  </pre>
+
+  <div class="warning">
+    Command එක <code>dotnet run</code>. <code>dotnetrun</code>, <code>dot net run</code>, <code>do net run</code> වැරදියි.
+  </div>
+
+  <h2>16.2 Frontend run</h2>
+  <pre>
+cd C:\github\attendance-system\AttendanceSystem_UI
+npm install
+npm start
+  </pre>
+
+  <h2>16.3 Build verify</h2>
+  <pre>
+cd C:\github\attendance-system\AttendanceSystem.API
+dotnet build --no-restore -o build-verify
+
+cd C:\github\attendance-system\AttendanceSystem_UI
+npm run build
+  </pre>
+
+  <h1>17. Common Errors and Fixes</h1>
+  <table class="small-table">
+    <thead>
+      <tr>
+        <th>Error</th>
+        <th>Reason</th>
+        <th>Fix</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>dotnetrun not recognized</code></td>
+        <td>Command spacing wrong.</td>
+        <td>Use <code>dotnet run</code>.</td>
+      </tr>
+      <tr>
+        <td><code>Failed to fetch</code></td>
+        <td>API not running, wrong port, CORS/API URL issue.</td>
+        <td>Start backend, check frontend API base URL.</td>
+      </tr>
+      <tr>
+        <td>Slow report loading</td>
+        <td>ERP/LeaveDB joins, large date range, cache cold.</td>
+        <td>Use month filters, cache warmup, snapshot support.</td>
+      </tr>
+      <tr>
+        <td>Debug exe locked</td>
+        <td>Existing API process running.</td>
+        <td>Stop old process or build to <code>build-verify</code>.</td>
+      </tr>
+      <tr>
+        <td>EF IntelliSense red errors</td>
+        <td>VS Code language server/cache issue.</td>
+        <td>Run restore/build, reload VS Code, restart C# language server.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h1>18. Data Accuracy Rules</h1>
+  <ul>
+    <li>Reports should use correct loaded date/month range.</li>
+    <li>OT voucher should use the same loaded month data, not stale selected month.</li>
+    <li>Employee self-access should compare normalized EPF.</li>
+    <li>Future month reports should show friendly info and block generation.</li>
+    <li>Historical workspace should be stored in workspace history/snapshot tables.</li>
+    <li>Snapshot writes should never break live report generation, but should log warnings.</li>
+  </ul>
+
+  <h1>19. Future Improvements</h1>
+  <ul>
+    <li><code>ReportGenerationAudits</code> table එකට actual report generation audit rows save කිරීම.</li>
+    <li>Monthly finalized reports snapshot-first mode එකට gradually move කිරීම.</li>
+    <li>Trainee Allowance Voucher separate module එකක් add කිරීම.</li>
+    <li>Admin UI එකෙන් attendance rules edit කිරීම.</li>
+    <li>Data source health dashboard එක improve කිරීම.</li>
+    <li>Automated tests add කිරීම: OT calculation, late status, auth role access.</li>
+  </ul>
+
+  <h2>19.1 Trainee Allowance Voucher note</h2>
+  <p>
+    User provided image එකෙන් පේන්නේ Trainee Allowance Voucher format එකක්. එය OT voucher එකෙන් වෙනස් report type එකක්. Future module එකක් ලෙස
+    attendance days, time-in/time-out, total days, allowance amount, signatures සමඟ separate voucher generate කළ හැක.
+  </p>
+
+  <h1>20. Final Summary</h1>
+  <p>
+    මෙම Attendance System එක React frontend + ASP.NET Core backend + SQL Server databases මත build කර ඇත. System එක fingerprint data, ERP employee
+    data, LeaveDB schedule data combine කරලා attendance, late/absent, reports, OT and voucher logic handle කරයි. Role-based login, employee personal
+    dashboard, admin management, report exports, snapshots/history foundation ඇතුළත් නිසා system එක long-term maintainable සහ expandable direction එකකට
+    ගෙන ගොස් ඇත.
+  </p>
+
+  <div class="ok">
+    Basic learner සඳහා මතක තියාගන්න: Frontend UI එක React වලින් data ඉල්ලනවා. Backend API එක C# වලින් logic process කරනවා. SQL Server databases
+    data store/read කරනවා. Reports/Vouchers මේ processed data වලින් generate වෙනවා.
+  </div>
+</body>
+</html>

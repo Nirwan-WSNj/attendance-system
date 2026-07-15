@@ -1,0 +1,48 @@
+# Node
+**/node_modules/
+
+# .NET build files
+**/bin/
+**/obj/
+.vs/
+
+# React build files
+AttendanceSystem_UI/build/
+AttendanceSystem_UI/.tmp-ui-build/
+AttendanceSystem_UI/build-auth-ready-check/
+
+# Temporary API build folders
+AttendanceSystem.API/build-check/
+AttendanceSystem.API/build-corrections-check/
+AttendanceSystem.API/build-verify/
+build-auth-ready-check/
+build-verify/
+
+# Local temporary tools/files
+.chrome-headless/
+.codex-build/
+.tmp/
+
+# Duplicate or nested repositories
+CECB_Attendance-System/
+CECB_Attendance_System/
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+*.err.log
+*.out.log
+
+# Generated reports
+reports/
+*_pdf_render.png
+attendance-system-report.html
+
+# Local API secrets
+AttendanceSystem.API/appsettings.json
+AttendanceSystem.API/appsettings.Development.json
+AttendanceSystem.API/DataProtectionKeys/

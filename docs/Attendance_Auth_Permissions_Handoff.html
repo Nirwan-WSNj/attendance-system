@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Attendance System Auth Permissions Handoff</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #172033;
+      background: #ffffff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 11px;
+      line-height: 1.42;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      color: #10223d;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: 25px;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 17px;
+      margin: 22px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #cfd8e6;
+    }
+
+    h3 {
+      font-size: 13px;
+      margin: 16px 0 6px;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f3f6fb;
+      border: 1px solid #dce5f2;
+      border-radius: 3px;
+      padding: 1px 4px;
+      color: #162a46;
+    }
+
+    .cover {
+      padding: 18px 20px;
+      border: 1px solid #cfd8e6;
+      background: #f7faff;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #4b5f7a;
+      margin-bottom: 12px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 5px 12px;
+      margin-top: 10px;
+    }
+
+    .meta-label {
+      color: #5a6d86;
+      font-weight: 600;
+    }
+
+    .notice {
+      margin: 10px 0;
+      padding: 9px 11px;
+      border-left: 4px solid #2f6fd6;
+      background: #f1f6ff;
+    }
+
+    .warning {
+      border-left-color: #b7791f;
+      background: #fff8eb;
+    }
+
+    ul {
+      margin: 6px 0 8px 18px;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #d8e0ed;
+      padding: 5px 6px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #eef3fb;
+      color: #10223d;
+      font-weight: 700;
+    }
+
+    .compact td, .compact th {
+      padding: 4px 5px;
+    }
+
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 10px;
+      color: #10223d;
+      white-space: nowrap;
+    }
+
+    .permission-list td:first-child {
+      width: 36%;
+    }
+
+    .role-table td:first-child {
+      width: 23%;
+      font-weight: 700;
+      color: #10223d;
+    }
+
+    .page-break {
+      break-before: page;
+    }
+
+    .small {
+      color: #5a6d86;
+      font-size: 10px;
+    }
+
+    .sql {
+      white-space: pre-wrap;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.6px;
+      background: #f6f8fb;
+      border: 1px solid #d8e0ed;
+      padding: 8px;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <h1>Attendance System Auth Permissions Handoff</h1>
+    <p class="subtitle">Permission, task, action and role setup for hosted CECB_Auth.</p>
+    <div class="meta-grid">
+      <div class="meta-label">Prepared date</div>
+      <div>2026-07-02</div>
+      <div class="meta-label">Target auth DB</div>
+      <div><code>CECB_Auth</code></div>
+      <div class="meta-label">System code</div>
+      <div><code>ATTENDANCE</code></div>
+      <div class="meta-label">Seed script</div>
+      <div><code>AttendanceSystem.API\DatabaseScripts\SeedAttendanceAuthPermissions.sql</code></div>
+      <div class="meta-label">Permission format</div>
+      <div><code>ATTENDANCE.{TASK}.{ACTION}</code></div>
+    </div>
+  </section>
+
+  <div class="notice">
+    This document is for the system engineer who will add Attendance System permissions into the hosted central Auth system.
+    The seed script is idempotent. It can be reviewed and run against <code>CECB_Auth</code>; it creates or updates the system, tasks, actions, task-actions, roles and role-permission mappings.
+  </div>
+
+  <h2>Setup Summary</h2>
+  <ul>
+    <li>Create or update central auth system: <code>ATTENDANCE</code>.</li>
+    <li>Create Attendance tasks and actions listed below.</li>
+    <li>Create task-action permissions listed below.</li>
+    <li>Create roles: <code>ATTENDANCE_ADMIN</code>, <code>ATTENDANCE_AGM</code>, <code>ATTENDANCE_CLERK</code>, <code>ATTENDANCE_EMPLOYEE</code>.</li>
+    <li>Assign users to the correct Attendance role.</li>
+    <li>For AGM and Clerk users, add <code>UserWorkUnit</code> assignments so the Attendance API can filter their assigned section/work unit data.</li>
+    <li>Configure Attendance API <code>CentralJwtSettings.SecretKey</code> with the same JWT secret used by central Auth.</li>
+  </ul>
+
+  <h2>System</h2>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>SystemCode</td><td><code>ATTENDANCE</code></td></tr>
+      <tr><td>SystemName</td><td>Attendance System</td></tr>
+      <tr><td>Subtitle</td><td>Attendance and Leave Information Management System</td></tr>
+      <tr><td>BaseUrl</td><td>Use hosted Attendance API URL. Local seed default is <code>http://localhost:5050/api</code>.</td></tr>
+      <tr><td>UiUrl</td><td>Use hosted Attendance UI URL. Local seed default is <code>http://localhost:3000</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Tasks</h2>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>TaskCode</th>
+        <th>TaskName</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>DASHBOARD</code></td><td>Dashboard</td><td>Dashboard summary and charts.</td></tr>
+      <tr><td><code>MY_ATTENDANCE</code></td><td>My Attendance</td><td>Employee own attendance view.</td></tr>
+      <tr><td><code>SECTION_ATTENDANCE</code></td><td>Section Attendance</td><td>AGM/Clerk assigned section attendance.</td></tr>
+      <tr><td><code>ALL_ATTENDANCE</code></td><td>All Attendance</td><td>Admin all attendance view.</td></tr>
+      <tr><td><code>EMPLOYEES</code></td><td>Employees</td><td>Employee list and search.</td></tr>
+      <tr><td><code>REPORTS</code></td><td>Reports</td><td>Employee, monthly, daily and late reports.</td></tr>
+      <tr><td><code>OT_SUMMARY</code></td><td>OT Summary</td><td>Overtime summary report.</td></tr>
+      <tr><td><code>ATTENDANCE_REGISTER</code></td><td>Attendance Register</td><td>Monthly attendance register.</td></tr>
+      <tr><td><code>ANALYTICS</code></td><td>Analytics</td><td>Attendance analytics view.</td></tr>
+      <tr><td><code>SOURCE_STATUS</code></td><td>Source Status</td><td>Attendance data source status.</td></tr>
+      <tr><td><code>CACHE</code></td><td>Cache</td><td>Refresh schedule/cache data.</td></tr>
+      <tr><td><code>SETTINGS</code></td><td>Settings</td><td>Admin settings/user management capability.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Actions</h2>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>ActionCode</th>
+        <th>ActionName</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>VIEW_OWN</code></td><td>View Own</td><td>Can view only the logged-in employee's own data.</td></tr>
+      <tr><td><code>VIEW_ASSIGNED</code></td><td>View Assigned</td><td>Can view assigned work unit or section data.</td></tr>
+      <tr><td><code>VIEW_ALL</code></td><td>View All</td><td>Can view all attendance data.</td></tr>
+      <tr><td><code>EXPORT</code></td><td>Export</td><td>Can export report data.</td></tr>
+      <tr><td><code>PRINT</code></td><td>Print</td><td>Can print report data.</td></tr>
+      <tr><td><code>REFRESH</code></td><td>Refresh</td><td>Can refresh cache/source data.</td></tr>
+      <tr><td><code>MANAGE</code></td><td>Manage</td><td>Can manage settings/users.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Task-Actions</h2>
+  <table class="compact permission-list">
+    <thead>
+      <tr>
+        <th>Permission Code</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">ATTENDANCE.DASHBOARD.VIEW_ASSIGNED</td><td>Assigned-scope dashboard.</td></tr>
+      <tr><td class="mono">ATTENDANCE.DASHBOARD.VIEW_ALL</td><td>Admin dashboard.</td></tr>
+      <tr><td class="mono">ATTENDANCE.MY_ATTENDANCE.VIEW_OWN</td><td>Employee own attendance.</td></tr>
+      <tr><td class="mono">ATTENDANCE.SECTION_ATTENDANCE.VIEW_ASSIGNED</td><td>Assigned section attendance.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ALL_ATTENDANCE.VIEW_ALL</td><td>All attendance records.</td></tr>
+      <tr><td class="mono">ATTENDANCE.EMPLOYEES.VIEW_ASSIGNED</td><td>Assigned employee list.</td></tr>
+      <tr><td class="mono">ATTENDANCE.EMPLOYEES.VIEW_ALL</td><td>All employee list.</td></tr>
+      <tr><td class="mono">ATTENDANCE.REPORTS.VIEW_OWN</td><td>Own reports.</td></tr>
+      <tr><td class="mono">ATTENDANCE.REPORTS.VIEW_ASSIGNED</td><td>Assigned reports.</td></tr>
+      <tr><td class="mono">ATTENDANCE.REPORTS.VIEW_ALL</td><td>All reports.</td></tr>
+      <tr><td class="mono">ATTENDANCE.REPORTS.EXPORT</td><td>Export reports.</td></tr>
+      <tr><td class="mono">ATTENDANCE.REPORTS.PRINT</td><td>Print reports.</td></tr>
+      <tr><td class="mono">ATTENDANCE.OT_SUMMARY.VIEW_OWN</td><td>Own OT summary.</td></tr>
+      <tr><td class="mono">ATTENDANCE.OT_SUMMARY.VIEW_ASSIGNED</td><td>Assigned OT summary.</td></tr>
+      <tr><td class="mono">ATTENDANCE.OT_SUMMARY.VIEW_ALL</td><td>All OT summary.</td></tr>
+      <tr><td class="mono">ATTENDANCE.OT_SUMMARY.EXPORT</td><td>Export OT summary.</td></tr>
+      <tr><td class="mono">ATTENDANCE.OT_SUMMARY.PRINT</td><td>Print OT summary.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ATTENDANCE_REGISTER.VIEW_ASSIGNED</td><td>Assigned attendance register.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ATTENDANCE_REGISTER.VIEW_ALL</td><td>All attendance register.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ATTENDANCE_REGISTER.EXPORT</td><td>Export register.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ATTENDANCE_REGISTER.PRINT</td><td>Print register.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ANALYTICS.VIEW_ASSIGNED</td><td>Assigned analytics.</td></tr>
+      <tr><td class="mono">ATTENDANCE.ANALYTICS.VIEW_ALL</td><td>All analytics.</td></tr>
+      <tr><td class="mono">ATTENDANCE.SOURCE_STATUS.VIEW_ALL</td><td>Admin source status.</td></tr>
+      <tr><td class="mono">ATTENDANCE.CACHE.REFRESH</td><td>Admin cache refresh.</td></tr>
+      <tr><td class="mono">ATTENDANCE.SETTINGS.MANAGE</td><td>Admin settings/users.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="page-break">Roles And Permissions</h2>
+  <table class="role-table">
+    <thead>
+      <tr>
+        <th>RoleCode</th>
+        <th>Use For</th>
+        <th>Permissions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ATTENDANCE_ADMIN</code></td>
+        <td>Attendance admins. Full attendance data access and admin tools.</td>
+        <td>All task-actions listed in this document. Expected active permission count: <strong>26</strong>.</td>
+      </tr>
+      <tr>
+        <td><code>ATTENDANCE_AGM</code></td>
+        <td>AGM users. They should see assigned work unit or section data only.</td>
+        <td>
+          <span class="mono">DASHBOARD.VIEW_ASSIGNED</span>,
+          <span class="mono">SECTION_ATTENDANCE.VIEW_ASSIGNED</span>,
+          <span class="mono">EMPLOYEES.VIEW_ASSIGNED</span>,
+          <span class="mono">REPORTS.VIEW_ASSIGNED</span>,
+          <span class="mono">REPORTS.EXPORT</span>,
+          <span class="mono">REPORTS.PRINT</span>,
+          <span class="mono">OT_SUMMARY.VIEW_ASSIGNED</span>,
+          <span class="mono">OT_SUMMARY.EXPORT</span>,
+          <span class="mono">OT_SUMMARY.PRINT</span>,
+          <span class="mono">ATTENDANCE_REGISTER.VIEW_ASSIGNED</span>,
+          <span class="mono">ATTENDANCE_REGISTER.EXPORT</span>,
+          <span class="mono">ATTENDANCE_REGISTER.PRINT</span>,
+          <span class="mono">ANALYTICS.VIEW_ASSIGNED</span>.
+          Expected active permission count: <strong>13</strong>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>ATTENDANCE_CLERK</code></td>
+        <td>Clerk users. They should see assigned section/work unit data only.</td>
+        <td>Same assigned-scope permissions as <code>ATTENDANCE_AGM</code>. Expected active permission count: <strong>13</strong>.</td>
+      </tr>
+      <tr>
+        <td><code>ATTENDANCE_EMPLOYEE</code></td>
+        <td>Normal employees. They should see their own attendance only.</td>
+        <td>
+          <span class="mono">MY_ATTENDANCE.VIEW_OWN</span>,
+          <span class="mono">REPORTS.VIEW_OWN</span>,
+          <span class="mono">OT_SUMMARY.VIEW_OWN</span>.
+          Expected active permission count: <strong>3</strong>.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Scope Rules</h2>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>User Type</th>
+        <th>Expected Data Scope</th>
+        <th>Required Auth Setup</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Admin</td>
+        <td>All attendance data, all reports, user/settings menu.</td>
+        <td>Assign <code>ATTENDANCE_ADMIN</code>.</td>
+      </tr>
+      <tr>
+        <td>AGM</td>
+        <td>Only assigned work unit/section data.</td>
+        <td>Assign <code>ATTENDANCE_AGM</code> and add <code>UserWorkUnit</code> rows.</td>
+      </tr>
+      <tr>
+        <td>Clerk</td>
+        <td>Only assigned section/work unit data.</td>
+        <td>Assign <code>ATTENDANCE_CLERK</code> and add <code>UserWorkUnit</code> rows.</td>
+      </tr>
+      <tr>
+        <td>Employee</td>
+        <td>Only own attendance, own reports and own OT.</td>
+        <td>Assign <code>ATTENDANCE_EMPLOYEE</code> and ensure EPF claim/mapping is available.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="notice warning">
+    AGM and Clerk filtering depends on <code>UserWorkUnit</code>. Work unit IDs should match the ERP work space IDs used by Attendance employee data, such as <code>AGMWorkSpaceId</code>, <code>DGMWorkSpaceId</code> or <code>ServiceUnitId</code>. If a user has the role but no work unit assignment, they can log in but assigned data may be empty or limited.
+  </div>
+
+  <h2>Engineer Run Checklist</h2>
+  <ul>
+    <li>Backup or confirm safe deployment window for hosted <code>CECB_Auth</code>.</li>
+    <li>Open and review <code>SeedAttendanceAuthPermissions.sql</code>.</li>
+    <li>Update local default URLs in the script if hosted <code>BaseUrl</code> and <code>UiUrl</code> should be stored in Auth.</li>
+    <li>Run the script against hosted <code>CECB_Auth</code>.</li>
+    <li>Assign Attendance roles to test users.</li>
+    <li>Add <code>UserWorkUnit</code> rows for AGM and Clerk test users.</li>
+    <li>Set Attendance API <code>CentralJwtSettings.SecretKey</code> to the same JWT secret used by central Auth.</li>
+    <li>Restart Attendance API after configuration changes.</li>
+    <li>Test login as Admin, AGM, Clerk and Employee.</li>
+  </ul>
+
+  <h2>Verification Queries</h2>
+  <p class="small">Run these after the seed script to verify created permissions and role mappings.</p>
+
+  <div class="sql">SELECT s.SystemCode, s.SystemName, s.IsActive
+FROM dbo.[System] s
+WHERE s.SystemCode = N'ATTENDANCE';
+
+SELECT t.TaskCode, a.ActionCode,
+       CONCAT(N'ATTENDANCE.', t.TaskCode, N'.', a.ActionCode) AS PermissionCode
+FROM dbo.[System] s
+JOIN dbo.[Task] t ON t.SystemId = s.SystemId AND t.IsActive = 1
+JOIN dbo.[TaskAction] ta ON ta.TaskId = t.TaskId AND ta.IsActive = 1
+JOIN dbo.[Action] a ON a.ActionId = ta.ActionId AND a.IsActive = 1
+WHERE s.SystemCode = N'ATTENDANCE'
+ORDER BY t.TaskCode, a.ActionCode;
+
+SELECT r.RoleCode, COUNT(rta.RoleTaskActionId) AS ActivePermissionCount
+FROM dbo.[System] s
+JOIN dbo.[Role] r ON r.SystemId = s.SystemId AND r.IsActive = 1
+LEFT JOIN dbo.[RoleTaskAction] rta ON rta.RoleId = r.RoleId AND rta.IsActive = 1
+WHERE s.SystemCode = N'ATTENDANCE'
+GROUP BY r.RoleCode
+ORDER BY r.RoleCode;</div>
+
+  <h2>Expected Role Counts</h2>
+  <table class="compact">
+    <thead>
+      <tr>
+        <th>RoleCode</th>
+        <th>Expected ActivePermissionCount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ATTENDANCE_ADMIN</code></td><td>26</td></tr>
+      <tr><td><code>ATTENDANCE_AGM</code></td><td>13</td></tr>
+      <tr><td><code>ATTENDANCE_CLERK</code></td><td>13</td></tr>
+      <tr><td><code>ATTENDANCE_EMPLOYEE</code></td><td>3</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Application Behavior After Setup</h2>
+  <ul>
+    <li>Attendance UI reads roles and permissions from central login response/JWT and stores them as <code>roleList</code> and <code>permissionList</code>.</li>
+    <li>Sidebar and routes hide or show menus by permission.</li>
+    <li>Attendance API filters report and employee data by permission and user scope.</li>
+    <li>Admin receives all data. AGM and Clerk receive assigned data. Employee receives own data.</li>
+    <li>Existing attendance calculation rules, OT rules and check-in/check-out logic are not changed by this permission setup.</li>
+  </ul>
+</body>
+</html>
